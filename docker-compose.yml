@@ -1,0 +1,40 @@
+services:
+
+  # Nginx Service
+  jockstream_nginx:
+    image: nginx:1.19-alpine
+    container_name: jockstream_nginx
+    restart: unless-stopped
+    volumes:
+      - ./src:/var/www/php/src
+      - ./.docker/nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - jockstream_api
+    networks:
+      - docker_network
+
+  # PHP Service
+  jockstream_api:
+    build:
+      context: ./.docker
+      dockerfile: Dockerfile
+    container_name: jockstream_api
+    restart: unless-stopped
+    working_dir: /var/www/php
+    env_file:
+      - ./.docker/.env
+    volumes:
+      - ./src:/var/www/php/src
+      - ./vendor:/var/www/php/vendor
+      - ./composer.json:/var/www/php/composer.json
+      - composer_data:/var/www/php/vendor
+    networks:
+      - docker_network
+
+# Volumes
+volumes:
+  composer_data:
+
+networks:
+  docker_network:
+    external: true
