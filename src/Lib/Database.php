@@ -31,13 +31,26 @@ class Database
         return $this->pdo;
     }
 
-    public function fetchAll(string $query, ?array $params): object
+    public function fetchAll(string $query, ?array $params = []): object
     {
         $stmt = $this->pdo->prepare($query);
         $stmt = $this->setStatementParams($stmt, $query, $params);
         $stmt->execute();
 
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (empty($results)) return (object)[];
+
+        return (object)Helper::snakeToCamelArray($results);
+    }
+
+    public function fetchOne(string $query, ?array $params = []): object
+    {
+        $stmt = $this->pdo->prepare($query);
+        $stmt = $this->setStatementParams($stmt, $query, $params);
+        $stmt->execute();
+
+        $results = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (empty($results)) return (object)[];
 

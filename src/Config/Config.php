@@ -11,8 +11,6 @@ class Config
     private function __construct()
     {
         $this->settings = [
-            'application' => [
-            ],
             'db' => [
                 'adapter' => getenv('DB_ADAPTER'),
                 'charset' => getenv('DB_CHARSET'),
@@ -22,6 +20,9 @@ class Config
                 'password' => getenv('DB_PASSWORD'),
                 'port' => getenv('DB_PORT'),
                 'username' => getenv('DB_USERNAME'),
+            ],
+            'rapid' => [
+                'apiKey' => getenv('RAPID_API_KEY'),
             ]
         ];
     }

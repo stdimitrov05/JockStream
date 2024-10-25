@@ -8,6 +8,7 @@ services:
     volumes:
       - ./src:/var/www/php/src
       - ./.docker/nginx/conf.d:/etc/nginx/conf.d
+      - ./vendor:/var/www/php/vendor
     depends_on:
       - jockstream_api
     networks:
@@ -27,7 +28,7 @@ services:
       - ./src:/var/www/php/src
       - ./vendor:/var/www/php/vendor
       - ./composer.json:/var/www/php/composer.json
-      - composer_data:/var/www/php/vendor
+      - ./vendor:/var/www/php/vendor
     networks:
       - docker_network
 
