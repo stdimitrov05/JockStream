@@ -7,16 +7,16 @@ use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Stdimitrov\Jockstream\Config\Config;
+use Stdimitrov\Jockstream\Exceptions\ServiceException;
 
-class GuzzleClient
+class GuzzleClient extends AbstractLib
 {
     private Client $client;
-    private array $headers;
 
     private Config $config;
 
     private mixed $response;
-    private string $domainUri;
+    private string $host;
 
     public function __construct()
     {
@@ -24,42 +24,26 @@ class GuzzleClient
         $this->config = Config::getInstance();
     }
 
-    public function instance(string $host): static
+    public function setHost(string $host): static
     {
-        $apiKey = $this->config->get('rapid')->apiKey;
-
-        if (!$apiKey) {
-            throw new Exception('API Key is not configured');
-        }
-
-        $this->domainUri = "https://" . $host;
-
-        $this->headers = [
-            'headers' => [
-                'x-rapidapi-host' => $host,
-                'x-rapidapi-key' => $apiKey,
-            ]
-        ];
-
+        $this->host = $host;
         return $this;
     }
 
-    public function get(string $uri): static
+    public function get(string $uri): object
     {
         try {
-            $uri = $this->domainUri . $uri;
-            $response = $this->client->get($uri, $this->headers);
+            $response = $this->client->get(trim($uri), [
+                'headers' => [
+                    'x-rapidapi-host' => $this->host,
+                    'x-rapidapi-key' => $this->config->get('rapid')->apiKey
+                ],
+            ]);
 
-            $this->response = $response->getBody()->getContents();
-            return $this;
+            return (object)json_decode($response->getBody()->getContents(), true);
         } catch (GuzzleException $e) {
             throw new Exception($e->getMessage(), $e->getCode(), $e);
         }
-    }
-
-    public function toObject(): object
-    {
-        return (object)$this->response;
     }
 
 
