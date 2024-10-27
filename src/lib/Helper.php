@@ -61,9 +61,4 @@ class Helper
         return $result;
     }
 
-    public static function arrayToObject(array $array): object
-    {
-        return json_decode(json_encode($array), false);
-    }
-
 }

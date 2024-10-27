@@ -1,41 +1,38 @@
 <?php
 
-namespace Stdimitrov\Jockstream;
-
-use Exception;
-use Stdimitrov\Jockstream\Config\Config;
-use Stdimitrov\Jockstream\Lib\Database;
-use Stdimitrov\Jockstream\Lib\GuzzleClient;
-use Stdimitrov\Jockstream\Lib\Helper;
-use Stdimitrov\Jockstream\Lib\JockApiV2;
+use Stdimitrov\Jockstream\Exceptions\HttpExceptions\Http500Exception;
+use Stdimitrov\Jockstream\Exceptions\HttpExceptions\Http404Exception;
+use Stdimitrov\Jockstream\Exceptions\ServiceException;
+use Stdimitrov\Jockstream\Services\AbstractService;
 
 require_once "../vendor/autoload.php"; // Ensure your autoload is correct
-require_once "Config/di.php"; // Include the DI configuration
-require_once "Lib/Database.php"; // Include the DI configuration
+$di = require 'config/di.php'; // Ensure the DI container is correctly loaded
 
 class Jockstream
 {
-    private Config $config;
-    private Database $db;
-    private object $provider;
-    private GuzzleClient $guzzleClient;
+    private object $jokeService;  // Added property for joke service
 
-    public function listJoke(): object
+    public function __construct($di)
     {
-        try {
-            $jokeApi = new JockApiV2();
-            $response = $jokeApi->getJoke();
-
-        } catch (Exception $e) {
-            echo $e->getCode();
-            echo $e->getMessage();
-        }
-
-        return Helper::arrayToObject($response);
+        $this->jokeService = $di->get('jokeServices');
     }
 
+    public function listJoke(): array
+    {
+        try {
+            $response = $this->jokeService->getJoke();
+        } catch (ServiceException $e) {
+            throw match ($e->getCode()) {
+                AbstractService::ERROR_NOT_FOUND
+                => new Http404Exception($e->getMessage(), $e->getCode(), $e),
+                default => new Http500Exception('Internal Server Error', $e->getCode(), $e),
+            };
+        }
 
+        return $response;
+    }
 }
 
-$app = new Jockstream();
-print_r($app->listJoke());
+// Instantiate Jockstream with DI container
+$app = new Jockstream($di);
+print_r($app->listJoke());  // Print the result of listJoke

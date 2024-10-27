@@ -2,13 +2,12 @@
 
 namespace Stdimitrov\Jockstream\Config;
 
-// Config.php
 class Config
 {
     private static ?Config $instance = null;
     private mixed $settings;
 
-    private function __construct()
+    public function __construct()
     {
         $this->settings = [
             'db' => [

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exceptions\HttpExceptions;
+namespace Stdimitrov\Jockstream\Exceptions\HttpExceptions;
 
 use Stdimitrov\Jockstream\Exceptions\AbstractHttpException;
 
