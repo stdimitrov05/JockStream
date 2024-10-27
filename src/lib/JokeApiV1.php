@@ -5,6 +5,7 @@ namespace Stdimitrov\Jockstream\Lib;
 use Exception;
 use Stdimitrov\Jockstream\Exceptions\ServiceException;
 use Stdimitrov\Jockstream\Interfaces\JockApiV1Interface;
+use Stdimitrov\Jockstream\Services\AbstractService;
 
 
 class JokeApiV1 extends GuzzleClient implements JockApiV1Interface
@@ -20,6 +21,13 @@ class JokeApiV1 extends GuzzleClient implements JockApiV1Interface
     {
         try {
             $apiResponse = $this->get("jokes");
+
+            if (!$apiResponse) {
+                throw new ServiceException(
+                    "Joke could not be retrieved from API",
+                    AbstractService::ERROR_NOT_FOUND
+                );
+            }
 
             $response = [
                 'id' => $apiResponse->id,
