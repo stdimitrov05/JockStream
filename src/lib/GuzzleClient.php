@@ -6,7 +6,9 @@ use Exception;
 use GuzzleHttp\Client;
 use Stdimitrov\Jockstream\Config\Config;
 use GuzzleHttp\Exception\RequestException;
+use Stdimitrov\Jockstream\Exceptions\ServiceException;
 use Stdimitrov\Jockstream\Interfaces\GuzzleClientInterface;
+use Stdimitrov\Jockstream\Services\AbstractService;
 
 class GuzzleClient implements GuzzleClientInterface
 {
@@ -70,13 +72,19 @@ class GuzzleClient implements GuzzleClientInterface
             // Wait for the promise to resolve and process the response
             return $promise->then(function ($response) {
                 $body = $response->getBody()->getContents();
+
+                if (empty($body)) return (object)[];
+
                 return (object)json_decode($body, true);
             })->wait();
 
         } catch (RequestException $e) {
-            // Catch Guzzle-specific exceptions and add more context
-            throw new Exception("API Request to $fullUri failed: " . $e->getMessage(), $e->getCode(), $e);
-        } catch (Exception $e) {
+            if ($e->getCode() == 429) {
+                throw new ServiceException(
+                    'Too many requests, please try again later.' ,
+                    AbstractService::ERROR_TOO_MANY_REQUESTS
+                );
+            }
             // Handle general exceptions
             throw new Exception("Unexpected error during API call: " . $e->getMessage(), $e->getCode(), $e);
         }

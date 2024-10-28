@@ -8,7 +8,7 @@ use Stdimitrov\Jockstream\Interfaces\JockApiV1Interface;
 use Stdimitrov\Jockstream\Services\AbstractService;
 
 
-class JokeApiV1 extends GuzzleClient implements JockApiV1Interface
+class JokeAlways extends GuzzleClient implements JockApiV1Interface
 {
 
     public function __construct()
@@ -20,23 +20,23 @@ class JokeApiV1 extends GuzzleClient implements JockApiV1Interface
     public function getJoke(): array
     {
         try {
-            $apiResponse = $this->get("jokes");
+            $apiResponse = $this->get("common");
 
             if (Helper::isObjectEmpty($apiResponse)) {
                 throw new ServiceException(
                     "Joke could not be retrieved from API",
                     AbstractService::ERROR_NOT_FOUND
                 );
-            } else {
-                $response = [
-                    'id' => $apiResponse->id,
-                    'type' => 'single',
-                    'category' => $apiResponse->category,
-                    'data' => [
-                        'joke' => $apiResponse->joke
-                    ]
-                ];
             }
+
+            $response = [
+                'id' => time(),
+                'type' => 'single',
+                'category' => 'random',
+                'data' => [
+                    'joke' => $apiResponse->data
+                ]
+            ];
         } catch (ServiceException|Exception $e) {
             throw new ServiceException($e->getMessage(), $e->getCode());
         }

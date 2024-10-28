@@ -4,6 +4,7 @@ namespace Stdimitrov\Jockstream\Services;
 
 use Stdimitrov\Jockstream\Exceptions\ServiceException;
 use Stdimitrov\Jockstream\Interfaces\JockApiV2Interface;
+use Stdimitrov\Jockstream\Lib\JokeAlways;
 use Stdimitrov\Jockstream\Lib\JokeApiV1;
 use Stdimitrov\Jockstream\Lib\JokeApiV2;
 use Stdimitrov\Jockstream\Models\ApiJokeProviders;
@@ -12,9 +13,9 @@ class JokeServices extends AbstractService
 {
     const int JOKE_API_V2 = 1;
     const int JOKE_API_V1 = 2;
-    const int WORLD_OF_JOKES1 = 3;
+    const int JOKE_ALWAYS = 3;
 
-    private JockApiV2Interface | JokeApiV1 $clientInstance;
+    private JockApiV2Interface | JokeApiV1 | JokeAlways $clientInstance;
 
     /**
      * Fetches a joke from an available joke provider.
@@ -22,7 +23,7 @@ class JokeServices extends AbstractService
      * @return array
      * @throws ServiceException
      */
-    public function getJoke(): array
+    public function getJokeFromAvailableProvider(): array
     {
         $apiProvider = new ApiJokeProviders();
         $availableProvider = $apiProvider->findAvailableProvider();
@@ -56,19 +57,11 @@ class JokeServices extends AbstractService
      */
     private function initializeClientForProvider(int $providerId): void
     {
-        switch ($providerId) {
-            case self::JOKE_API_V2:
-                $this->clientInstance = new JokeApiV2();
-                break;
-            case self::JOKE_API_V1:
-                 $this->clientInstance = new JokeApiV1();
-                break;
-            case self::WORLD_OF_JOKES1:
-                // You would instantiate WorldOfJokes1 here (when available)
-                // $this->clientInstance = new WorldOfJokes1();
-                throw new ServiceException("WORLD_OF_JOKES1 is not yet implemented.", self::ERROR_NOT_FOUND);
-            default:
-                throw new ServiceException("Unsupported provider ID: $providerId", self::ERROR_NOT_FOUND);
-        }
+        $this->clientInstance = match ($providerId) {
+            self::JOKE_API_V2 => new JokeApiV2(),
+            self::JOKE_API_V1 => new JokeApiV1(),
+            self::JOKE_ALWAYS => new JokeAlways(),
+            default => throw new ServiceException("Unsupported provider ID: $providerId", self::ERROR_NOT_FOUND),
+        };
     }
 }

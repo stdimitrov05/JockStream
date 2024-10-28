@@ -61,4 +61,26 @@ class Helper
         return $result;
     }
 
+    /**
+     * Checks if an object is empty (has no properties or all properties are null).
+     *
+     * @param object $obj The object to check.
+     * @return bool Returns true if the object is empty, false otherwise.
+     */
+    public static function isObjectEmpty(object $obj): bool
+    {
+        // Get object properties
+        $properties = get_object_vars($obj);
+
+        // Check if the object has no properties or all properties are null
+        foreach ($properties as $property) {
+            if (!is_null($property)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
 }
