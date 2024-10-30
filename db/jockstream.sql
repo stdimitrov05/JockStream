@@ -1,11 +1,3 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
---
--- Host: mysql:3306
--- Generation Time: Oct 27, 2024 at 06:24 PM
--- Server version: 8.2.0
--- PHP Version: 8.2.8
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -20,6 +12,8 @@ SET time_zone = "+00:00";
 --
 -- Database: `jockstream`
 --
+
+CREATE DATABASE jockstream;
 
 -- --------------------------------------------------------
 
