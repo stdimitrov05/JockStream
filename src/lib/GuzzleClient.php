@@ -9,18 +9,30 @@ use GuzzleHttp\Exception\RequestException;
 use Stdimitrov\Jockstream\Exceptions\ServiceException;
 use Stdimitrov\Jockstream\Interfaces\GuzzleClientInterface;
 use Stdimitrov\Jockstream\Services\AbstractService;
+use Stdimitrov\Jockstream\Services\LogsServices;
 
-class GuzzleClient implements GuzzleClientInterface
+class GuzzleClient extends AbstractService implements GuzzleClientInterface
 {
     private Client $client;
     private Config $config;
     private string $host;
     private string $api;
+    private int $providerId;
+
+    private LogsServices $logsServices;
+
 
     public function __construct()
     {
         $this->client = new Client();
-        $this->config = Config::getInstance();
+        $this->config = $this->getService('config');
+        $this->logsServices = $this->getService('logsServices');
+    }
+
+    public function setProviderId(int $id): static
+    {
+        $this->providerId = $id;
+        return $this;
     }
 
     /**
@@ -57,6 +69,8 @@ class GuzzleClient implements GuzzleClientInterface
     public function get(string $uri): object
     {
         $fullUri = $this->api . $uri;
+        $this->logsServices->setRequestUrl($fullUri);
+
         try {
             $promise = $this->client->getAsync(trim($fullUri), [
                 'headers' => [
@@ -78,7 +92,13 @@ class GuzzleClient implements GuzzleClientInterface
                 return (object)json_decode($body, true);
             })->wait();
 
-        } catch (RequestException $e) {
+        } catch (RequestException | Exception $e) {
+            $this->logsServices->error(
+                $this->providerId,
+                $e->getMessage(),
+                $e->getCode()
+            );
+
             if ($e->getCode() == 429) {
                 throw new ServiceException(
                     'Too many requests, please try again later.' ,

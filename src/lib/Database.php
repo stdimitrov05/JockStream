@@ -115,7 +115,6 @@ class Database implements DatabaseInterface
         foreach ($queryParams as $index) {
             $bindValues[$index] = $params[$index];
         }
-
         // Bind parameters dynamically
         foreach ($bindValues as $index => $value) {
             if (is_numeric($value)) {
@@ -124,7 +123,14 @@ class Database implements DatabaseInterface
                 $stmt->bindValue($index + 1, $value);
             }
         }
+        var_dump($bindValues);
 
         return $stmt;
+    }
+
+    public function insert(string $sql, array $params = []): void {
+        $stmt = $this->pdo->prepare($sql);
+        $stmt = $this->setStatementParams($stmt, $sql, $params);
+        $stmt->execute();
     }
 }

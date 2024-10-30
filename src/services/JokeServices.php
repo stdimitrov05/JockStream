@@ -15,6 +15,9 @@ class JokeServices extends AbstractService
     const int JOKE_API_V1 = 2;
     const int JOKE_ALWAYS = 3;
 
+    private mixed $apiJokeProvider = null;
+
+
     private JockApiV2Interface | JokeApiV1 | JokeAlways $clientInstance;
 
     /**
@@ -39,6 +42,7 @@ class JokeServices extends AbstractService
         $this->initializeClientForProvider($apiProvider->getId());
 
         $response = $this->clientInstance
+            ->setProviderId($apiProvider->getId())
             ->setHost($apiProvider->getHost())
             ->setApiEndpoint($apiProvider->getApiUri())
             ->getJoke();
@@ -47,6 +51,7 @@ class JokeServices extends AbstractService
 
         return $response;
     }
+
 
     /**
      * Initializes the appropriate API client based on the provider ID.

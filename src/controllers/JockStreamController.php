@@ -2,28 +2,20 @@
 
 namespace Stdimitrov\Jockstream\Controllers;
 
+use Stdimitrov\Jockstream\Config\Injectable;
 use Stdimitrov\Jockstream\Exceptions\HttpExceptions\Http404Exception;
 use Stdimitrov\Jockstream\Exceptions\HttpExceptions\Http429Exception;
 use Stdimitrov\Jockstream\Exceptions\HttpExceptions\Http500Exception;
 use Stdimitrov\Jockstream\Exceptions\ServiceException;
 use Stdimitrov\Jockstream\Services\AbstractService;
 
-class JockStreamController
+class JockStreamController extends Injectable
 {
-    private object $jokeService;
-
-    public function __construct()
-    {
-        // Ensure the DI container is correctly loaded
-        $di = require __DIR__. '/../config/di.php';
-
-        $this->jokeService = $di->get('jokeServices');
-    }
 
     public function fetchJoke(): array
     {
         try {
-            $response = $this->jokeService->getJokeFromAvailableProvider();
+            $response = $this->getService('jokeServices')->getJokeFromAvailableProvider();
 
         } catch (ServiceException $e) {
 

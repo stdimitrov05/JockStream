@@ -6,11 +6,16 @@ use Stdimitrov\Jockstream\Controllers\JockStreamController;
 use Stdimitrov\Jockstream\Lib\Database;
 use Stdimitrov\Jockstream\Lib\GuzzleClient;
 use Stdimitrov\Jockstream\Services\JokeServices;
+use Stdimitrov\Jockstream\Services\LogsServices;
 
 $di = new Container();
 
 $di->set('jokeServices', function () {
     return new JokeServices();
+});
+
+$di->set('logsServices', function () {
+    return new LogsServices();
 });
 
 $di->set('jockStreamController', function () {
