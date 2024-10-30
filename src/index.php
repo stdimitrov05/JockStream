@@ -9,9 +9,9 @@ try {
 
     $jokeClass = new JockStream();
 
-    $response  = $jokeClass->listSingleJoke();
+    $response  = $jokeClass->listMultipleJokes(3);
 
     print_r($response);die;
 } catch (ServiceException | Exception $e) {
-    echo $e->getMessage();
+    echo $e->getMessage();die;
 }

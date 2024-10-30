@@ -123,11 +123,17 @@ class Database implements DatabaseInterface
                 $stmt->bindValue($index + 1, $value);
             }
         }
-        var_dump($bindValues);
 
         return $stmt;
     }
 
+    /**
+     * Create new row
+     *
+     * @param string $sql
+     * @param array $params
+     * @return void
+     */
     public function insert(string $sql, array $params = []): void {
         $stmt = $this->pdo->prepare($sql);
         $stmt = $this->setStatementParams($stmt, $sql, $params);

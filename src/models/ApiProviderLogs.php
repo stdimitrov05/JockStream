@@ -102,6 +102,7 @@ class ApiProviderLogs extends Database
     }
 
 
+    // Create new log
     public function create(): ?self
     {
         $params = [
@@ -113,7 +114,7 @@ class ApiProviderLogs extends Database
         ];
 
         $params = Helper::prepareSqlParams($params);
-        $sql = "INSERT INTO ".self::TABLE_NAME." (" . $params['columns'] . ") VALUES (" . $params['placeholders'] . ")";
+        $sql = "INSERT INTO " . self::TABLE_NAME . " (" . $params['columns'] . ") VALUES (" . $params['placeholders'] . ")";
         $this->insert($sql, $params['values']);
         return $this;
     }

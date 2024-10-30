@@ -12,4 +12,8 @@ class JockStream extends Injectable
         return $this->getService('jockStreamController')->fetchJoke();
     }
 
+    public function listMultipleJoke(int $limit): array
+    {
+        return $this->getService('jockStreamController')->fetchJokes($limit);
+    }
 }

@@ -26,7 +26,7 @@ class JokeServices extends AbstractService
      * @return array
      * @throws ServiceException
      */
-    public function getJokeFromAvailableProvider(): array
+    public function getRandomJoke(): array
     {
         $apiProvider = new ApiJokeProviders();
         $availableProvider = $apiProvider->findAvailableProvider();
@@ -50,6 +50,11 @@ class JokeServices extends AbstractService
         $apiProvider->updateUsedTotal();
 
         return $response;
+    }
+
+    public function getRandomMultipleJokes(int $limit): array
+    {
+        // Todo call api
     }
 
 

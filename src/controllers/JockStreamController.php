@@ -15,7 +15,7 @@ class JockStreamController extends Injectable
     public function fetchJoke(): array
     {
         try {
-            $response = $this->getService('jokeServices')->getJokeFromAvailableProvider();
+            $response = $this->getService('jokeServices')->getRandomJoke();
 
         } catch (ServiceException $e) {
 
@@ -24,6 +24,23 @@ class JockStreamController extends Injectable
                 => new Http404Exception($e->getMessage(), $e->getCode(), $e),
                 AbstractService::ERROR_TOO_MANY_REQUESTS
                 => new Http429Exception($e->getMessage(), $e->getCode(), $e),
+                default => new Http500Exception($e->getMessage(), $e->getCode(), $e),
+            };
+        }
+
+        return $response;
+    }
+
+    public function listMultipleJokes(): array
+    {
+        try {
+            $response = $this->getService('jokeServices')->getRandomMultipleJokes();
+
+        } catch (ServiceException $e) {
+
+            throw match ($e->getCode()) {
+                AbstractService::ERROR_NOT_FOUND
+                => new Http404Exception($e->getMessage(), $e->getCode(), $e),
                 default => new Http500Exception($e->getMessage(), $e->getCode(), $e),
             };
         }
