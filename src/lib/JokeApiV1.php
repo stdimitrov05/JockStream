@@ -16,13 +16,17 @@ class JokeApiV1 extends GuzzleClient implements JockApiV1Interface
         parent::__construct();
     }
 
-
+    /**
+     * Retrieves a single joke from the API and formats the response.
+     *
+     * @return array The formatted joke data, including ID, type, category, and joke text.
+     * @throws ServiceException If the joke could not be retrieved or an API error occurs.
+     */
     public function getJoke(): array
     {
         try {
             $apiResponse = $this->get("jokes");
-
-            if (Helper::isObjectEmpty($apiResponse)) {
+            if (empty((array)$apiResponse)) {
                 throw new ServiceException(
                     "Joke could not be retrieved from API",
                     AbstractService::ERROR_NOT_FOUND

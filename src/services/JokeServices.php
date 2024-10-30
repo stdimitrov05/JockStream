@@ -18,7 +18,7 @@ class JokeServices extends AbstractService
     private mixed $apiJokeProvider = null;
 
 
-    private JockApiV2Interface | JokeApiV1 | JokeAlways $clientInstance;
+    private JockApiV2Interface|JokeApiV1|JokeAlways $clientInstance;
 
     /**
      * Fetches a joke from an available joke provider.
@@ -52,9 +52,41 @@ class JokeServices extends AbstractService
         return $response;
     }
 
-    public function getRandomMultipleJokes(int $limit): array
+    /**
+     * Retrieves a specified number of random jokes from a randomly selected provider.
+     *
+     * @param int $limit
+     * @return array
+     * @throws ServiceException
+     */
+    public function fetchMultipleRandomJokes(int $limit): array
     {
-        // Todo call api
+        $provider = new ApiJokeProviders();
+        $providerDetails = $provider->findById(rand(self::JOKE_API_V2, self::JOKE_ALWAYS));
+
+        if (!$providerDetails) {
+            throw new ServiceException(
+                "No joke providers found.",
+                self::ERROR_NOT_FOUND
+            );
+        }
+        // Initialize the correct client for the available provider
+        $this->initializeClientForProvider($providerDetails->getId());
+        $tmpArray = [];
+
+        for ($i = 0; $i <= $limit; $i++) {
+            $tmpArray[] = $this->clientInstance
+                ->setProviderId($providerDetails->getId())
+                ->setHost($providerDetails->getHost())
+                ->setApiEndpoint($providerDetails->getApiUri())
+                ->getJoke();
+        }
+        $response = $tmpArray;
+        unset($tmpArray);
+
+        $providerDetails->updateUsedTotal();
+
+        return $response;
     }
 
 
