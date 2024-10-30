@@ -16,7 +16,7 @@ Install the library via Composer:
 
 ```bash
 composer require stdimitrov/jockstream
-``
+```
 
 
 ## Environment Configuration
@@ -36,7 +36,7 @@ DB_PASSWORD=your_password
 DB_NAME=jockstream
 DB_CHARSET=utf8mb4
 DB_COLLATION=utf8mb4_0900_ai_ci
-``
+```
 
 Use the file that is in the db folder.
 
